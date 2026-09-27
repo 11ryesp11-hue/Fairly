@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fairly — Every argument deserves a verdict</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B2A4A;
+    --ink-soft: #34456b;
+    --paper: #F7F2E7;
+    --paper-line: #e4dcc8;
+    --gold: #B8863B;
+    --teal: #2F6F62;
+    --rust: #A84B32;
+    --text: #14181f;
+    --text-muted: #5b5f6b;
+    --white: #ffffff;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14181f;
+      --paper-line: #2a3040;
+      --text: #ECE7DA;
+      --text-muted: #9aa0ad;
+      --white: #1c2230;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181f;
+    --paper-line: #2a3040;
+    --text: #ECE7DA;
+    --text-muted: #9aa0ad;
+    --white: #1c2230;
+  }
+
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 22px 64px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0 8px;
+  }
+  .mark { display: flex; align-items: center; gap: 9px; }
+  .mark svg { width: 22px; height: 22px; flex: none; }
+  .mark span { font-family: 'Source Serif 4', serif; font-weight: 700; font-size: 19px; color: var(--ink); letter-spacing: -0.01em; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mark span { color: #E7D9B8; } }
+  :root[data-theme="dark"] .mark span { color: #E7D9B8; }
+
+  .hero { padding: 20px 0 30px; }
+  .hero h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: clamp(30px, 7vw, 42px);
+    line-height: 1.12;
+    margin: 0 0 14px;
+    color: var(--ink);
+    max-width: 15ch;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero h1 { color: #EFE7D4; } }
+  :root[data-theme="dark"] .hero h1 { color: #EFE7D4; }
+  .hero p { font-size: 16px; line-height: 1.55; color: var(--text-muted); max-width: 42ch; margin: 0; }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--paper-line);
+    border-radius: 14px;
+    padding: 22px;
+    margin-top: 22px;
+  }
+
+  .side-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; margin-bottom: 8px;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .dot.a { background: var(--teal); }
+  .dot.b { background: var(--rust); }
+
+  textarea {
+    width: 100%;
+    min-height: 84px;
+    resize: vertical;
+    border: 1px solid var(--paper-line);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.45;
+    background: var(--paper);
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  textarea:last-child { margin-bottom: 0; }
+  textarea:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  .name-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .name-row input {
+    flex: 1; min-width: 0;
+    border: 1px solid var(--paper-line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--paper);
+    color: var(--text);
+  }
+  .name-row input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  button.primary {
+    width: 100%;
+    margin-top: 6px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:active { transform: translateY(1px); }
+  button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .verdict { display: none; }
+  .verdict.show { display: block; }
+
+  .stamp {
+    display: inline-flex; align-items: center; gap: 7px;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transform: rotate(-2deg);
+    margin-bottom: 16px;
+  }
+
+  .verdict h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 22px;
+    line-height: 1.35;
+    margin: 0 0 18px;
+    color: var(--ink);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .verdict h2 { color: #EFE7D4; } }
+  :root[data-theme="dark"] .verdict h2 { color: #EFE7D4; }
+
+  .split { margin-bottom: 6px; }
+  .split-labels { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .split-labels .a { color: var(--teal); }
+  .split-labels .b { color: var(--rust); }
+  .bar { height: 12px; border-radius: 999px; overflow: hidden; display: flex; background: var(--paper-line); }
+  .bar .a-fill { background: var(--teal); }
+  .bar .b-fill { background: var(--rust); }
+
+  .reasoning {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--paper-line);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .actions { display: flex; gap: 10px; margin-top: 18px; }
+  .actions button {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--paper-line);
+    color: var(--text);
+    border-radius: 9px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pro {
+    margin-top: 34px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .pro h3 { font-family: 'Source Serif 4', serif; font-size: 18px; margin: 0 0 6px; }
+  .pro p { font-size: 14px; line-height: 1.55; color: #cfd6e6; margin: 0 0 14px; }
+  .pro a.btn {
+    display: inline-block;
+    background: var(--gold);
+    color: #1B2A4A;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px 16px;
+    border-radius: 8px;
+  }
+
+  footer { margin-top: 30px; font-size: 12.5px; color: var(--text-muted); text-align: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2V22M12 2L6 6M12 2L18 6M4 8L1 15C1 17 3 18 5 18C7 18 9 17 9 15L6 8M6 8H4M6 8H8M20 8L17 15C17 17 19 18 21 18C23 18 25 17 25 15" stroke="#B8863B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-1,0) scale(0.9)"/>
+        <path d="M18 8L15 15C15 17 17 18 19 18C21 18 23 17 23 15L20 8" stroke="#B8863B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-3,0) scale(0.82)"/>
+        <rect x="3" y="20" width="18" height="2" rx="1" fill="#1B2A4A"/>
+      </svg>
+      <span>Fairly</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Every argument deserves a verdict.</h1>
+    <p>Both sides make their case. Fairly reads the room and rules — no more going in circles about who started it.</p>
+  </section>
+
+  <div class="card">
+    <div class="side-label"><span class="dot a"></span>Side A</div>
+    <div class="name-row"><input id="nameA" placeholder="Name (optional)" maxlength="20"></div>
+    <textarea id="argA" placeholder="What happened, from your side?"></textarea>
+
+    <div class="side-label" style="margin-top:16px;"><span class="dot b"></span>Side B</div>
+    <div class="name-row"><input id="nameB" placeholder="Name (optional)" maxlength="20"></div>
+    <textarea id="argB" placeholder="What happened, from your side?"></textarea>
+
+    <button class="primary" id="judgeBtn" onclick="reachVerdict()">Reach a verdict</button>
+  </div>
+
+  <div class="card verdict" id="verdictCard">
+    <div class="stamp">⚖ RULING</div>
+    <h2 id="verdictHeadline"></h2>
+
+    <div class="split">
+      <div class="split-labels">
+        <span class="a" id="labelA"></span>
+        <span class="b" id="labelB"></span>
+      </div>
+      <div class="bar">
+        <div class="a-fill" id="fillA" style="width:50%"></div>
+        <div class="b-fill" id="fillB" style="width:50%"></div>
+      </div>
+    </div>
+
+    <div class="reasoning" id="verdictReasoning"></div>
+
+    <div class="actions">
+      <button onclick="copyVerdict()">Copy verdict</button>
+      <button onclick="resetForm()">New case</button>
+    </div>
+  </div>
+
+  <div class="pro">
+    <h3>Want every verdict saved?</h3>
+    <p>Fairly Pro keeps a history of every ruling, lets you customize the judge's tone, and settles group disputes with more than two sides. Join the waitlist and we'll email you when it's ready.</p>
+    <a class="btn" id="waitlistBtn" href="#">Join the Pro waitlist</a>
+  </div>
+
+  <footer>Fairly gives a fast, lighthearted read — not legal or relationship advice.</footer>
+</div>
+
+<script>
+const openers = [
+  "Having heard both sides, the verdict is straightforward.",
+  "This one isn't as close as either side thinks.",
+  "After reviewing the case, here's how the blame breaks down.",
+  "Both statements considered, the ruling goes as follows."
+];
+
+const heavyPhrasesFor = (pct) => {
+  if (pct >= 70) return ["carries most of the blame here", "is mainly in the wrong on this one", "owes the bigger apology"];
+  if (pct >= 55) return ["is a little more in the wrong", "tips the blame slightly", "should probably apologize first"];
+  return ["shares the blame about evenly", "isn't clearly more at fault", "should meet in the middle"];
+};
+
+const reasoningBits = {
+  defensive: "leaning on words like \"but\" and \"always\" reads as defensive rather than accountable",
+  short: "the short, clipped explanation suggests there's more to the story left unsaid",
+  detailed: "the detailed account carries more weight simply because it shows the work",
+  sorry: "acknowledging fault upfront counts for a lot here",
+  blamey: "shifting focus onto the other person's past behavior doesn't help the case",
+  calm: "the even, specific tone comes across as more credible"
+};
+
+function analyzeSide(text) {
+  const t = text.toLowerCase();
+  let score = 50; // higher = more fault
+  const notes = [];
+
+  if (/\bsorry\b|\bmy fault\b|\bi shouldn't have\b/.test(t)) { score -= 14; notes.push('sorry'); }
+  if (/\balways\b|\bnever\b|\bevery time\b/.test(t)) { score += 8; notes.push('defensive'); }
+  if (/\bbut\b/.test(t)) { score += 4; }
+  if (/\byou always\b|\byou never\b|\bwhat about\b/.test(t)) { score += 10; notes.push('blamey'); }
+  if (text.trim().split(/\s+/).length < 12 && text.trim().length > 0) { notes.push('short'); score += 3; }
+  if (text.trim().split(/\s+/).length > 40) { notes.push('detailed'); score -= 5; }
+  if (/\bi understand\b|\bi see why\b|\bfair point\b/.test(t)) { score -= 6; notes.push('calm'); }
+
+  return { score, notes };
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function reachVerdict() {
+  const argA = document.getElementById('argA').value.trim();
+  const argB = document.getElementById('argB').value.trim();
+  if (!argA || !argB) {
+    alert('Both sides need to state their case first.');
+    return;
+  }
+  const nameA = document.getElementById('nameA').value.trim() || 'Side A';
+  const nameB = document.getElementById('nameB').value.trim() || 'Side B';
+
+  const a = analyzeSide(argA);
+  const b = analyzeSide(argB);
+
+  // Higher "score" = more at fault. Compare A's fault vs B's fault to get A's share of blame.
+  let diff = a.score - b.score; // positive = A more at fault
+  diff = Math.max(-40, Math.min(40, diff));
+  let blameA = Math.round(50 + diff / 2);
+  blameA = Math.max(15, Math.min(85, blameA));
+  const blameB = 100 - blameA;
+
+  const moreAtFaultPct = Math.max(blameA, blameB);
+  const moreAtFaultName = blameA >= blameB ? nameA : nameB;
+  const lessAtFaultName = blameA >= blameB ? nameB : nameA;
+
+  const headline = moreAtFaultPct >= 65
+    ? `${moreAtFaultName} ${pick(heavyPhrasesFor(moreAtFaultPct))}.`
+    : `${moreAtFaultName} and ${lessAtFaultName} ${pick(heavyPhrasesFor(moreAtFaultPct))}.`;
+
+  document.getElementById('verdictHeadline').textContent = `${pick(openers)} ${headline}`;
+  document.getElementById('labelA').textContent = `${nameA} — ${blameA}%`;
+  document.getElementById('labelB').textContent = `${nameB} — ${blameB}%`;
+  document.getElementById('fillA').style.width = blameA + '%';
+  document.getElementById('fillB').style.width = blameB + '%';
+
+  const notesUsed = [...new Set([...a.notes, ...b.notes])].slice(0, 2);
+  const reasoningParts = notesUsed.map(n => reasoningBits[n]).filter(Boolean);
+  const reasoningText = reasoningParts.length
+    ? `A couple of things stood out: ${reasoningParts.join('; ')}.`
+    : `Both accounts were fairly balanced, so this one comes down to the details each side chose to include.`;
+  document.getElementById('verdictReasoning').textContent = reasoningText;
+
+  document.getElementById('verdictCard').classList.add('show');
+  document.getElementById('verdictCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const subject = encodeURIComponent('Fairly Pro waitlist');
+  const body = encodeURIComponent(`Add me to the Fairly Pro waitlist.\n\nCase reference: ${nameA} vs ${nameB}`);
+  document.getElementById('waitlistBtn').href = `mailto:11ryesp11@gmail.com?subject=${subject}&body=${body}`;
+}
+
+function resetForm() {
+  document.getElementById('argA').value = '';
+  document.getElementById('argB').value = '';
+  document.getElementById('nameA').value = '';
+  document.getElementById('nameB').value = '';
+  document.getElementById('verdictCard').classList.remove('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyVerdict() {
+  const headline = document.getElementById('verdictHeadline').textContent;
+  const reasoning = document.getElementById('verdictReasoning').textContent;
+  const labelA = document.getElementById('labelA').textContent;
+  const labelB = document.getElementById('labelB').textContent;
+  const text = `Fairly's ruling:\n${headline}\n\n${labelA} · ${labelB}\n\n${reasoning}`;
+  navigator.clipboard?.writeText(text).then(() => {
+    alert('Verdict copied.');
+  }).catch(() => {
+    alert('Could not copy — select and copy the text manually.');
+  });
+}
+</script>
+</body>
+</html>
