@@ -1,8 +1,8 @@
-# Fairly ⚖️
+# Fairlyyy ⚖️
 
 **Every argument deserves a verdict.**
 
-Fairly is a lighthearted web app for settling petty arguments between couples, roommates, and friends. Both sides write their version of events, and Fairly hands down a ruling — a blame split, a headline verdict, and a bit of reasoning to back it up.
+Fairlyyy is a lighthearted web app for settling petty arguments between couples, roommates, and friends. Both sides write their version of events, and Fairly hands down a ruling — a blame split, a headline verdict, and a bit of reasoning to back it up.
 
 ## How it works
 
@@ -24,11 +24,11 @@ Fairly is a lighthearted web app for settling petty arguments between couples, r
 
 ## Deployment
 
-Fairly is a static site — deploy it anywhere that serves plain HTML:
+Fairlyyy is a static site — deploy it anywhere that serves plain HTML:
 
 - **Render**: New → Static Site → connect this repo → build command blank → publish directory `.`
 - **GitHub Pages**: enable Pages on this repo, serving from `main` / root
 
 ## Disclaimer
 
-Fairly gives a fast, lighthearted read on petty disputes. It isn't legal or relationship advice.
+Fairlyyy gives a fast, lighthearted read on petty disputes. It isn't legal or relationship advice.
